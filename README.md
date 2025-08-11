@@ -1,9 +1,5 @@
-﻿Here’s a polished and purpose-fit `README.md` for your **`react.dashboard`** package, replacing the default Vite template:
-
----
-
-```md
-# Leximo Dashboard
+﻿```md
+# React Dashboard
 
 A reusable, customizable React dashboard component built with Vite. Provides a top bar, sidebar, and theming support — all configurable via props. Designed to integrate cleanly into apps that already use React Router.
 
@@ -90,36 +86,3 @@ function DashboardPage() {
 ## 🔄 Dynamic Navigation
 
 To enable navigation actions inside menu items, your app **must wrap everything inside a `<Router>`**, so hooks like `useNavigate()` can work.
-
-## 🧪 Development
-
-To develop the package locally:
-
-```bash
-npm install
-npm run dev
-```
-
-To build for publishing:
-
-```bash
-npm run build
-```
-
-## 📦 Publishing Notes
-
-This package uses `vite` to build a library. It **externalizes** these libraries:
-
-```js
-external: ['react', 'react-dom', 'react-router-dom']
-```
-
-> This keeps bundle size small and ensures single React/Router instances across consuming apps.
-
----
-
-**MIT Licensed**  
-Built with ❤️ for React projects.
-```
-
----
