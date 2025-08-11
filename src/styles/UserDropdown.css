@@ -1,0 +1,14 @@
+[data-bs-theme="light"] {
+    --dropdown-bg: #ffffff;
+    --dropdown-border: #ced4da;
+}
+
+[data-bs-theme="dark"] {
+    --dropdown-bg: #343a40;
+    --dropdown-border: #495057;
+}
+
+.dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border-color: var(--dropdown-border);
+}

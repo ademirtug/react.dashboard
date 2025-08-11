@@ -1,0 +1,29 @@
+[data-bs-theme="light"] {
+    --search-bg: #ffffff;
+    --search-border: #ced4da;
+    --search-color: #212529;
+    --search-icon-color: #6c757d;
+    --search-icon-hover: #0d6efd;
+}
+
+[data-bs-theme="dark"] {
+    --search-bg: #212529;
+    --search-border: #495057;
+    --search-color: #f8f9fa;
+    --search-icon-color: #adb5bd;
+    --search-icon-hover: #85d6ff;
+}
+
+.search-widget input {
+    background-color: var(--search-bg);
+    border: 1px solid var(--search-border);
+    color: var(--search-color);
+}
+
+.search-widget button {
+    color: var(--search-icon-color);
+}
+
+    .search-widget button:hover {
+        color: var(--search-icon-hover);
+    }

@@ -1,0 +1,108 @@
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    height: var(--top-navbar-height);
+    z-index: 1042;
+    background: var(--top-navbar-bg);
+    border-bottom: 1px solid var(--top-navbar-border);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+    .top-navbar .navbar-brand {
+        color: var(--bs-emphasis-color);
+    }
+
+/* Mobile specific styles */
+@media (max-width: 767.98px) {
+    .top-navbar {
+        left: 0;
+        padding: 0 0.5rem;
+    }
+
+        .top-navbar > button:first-child {
+            margin-right: auto;
+        }
+
+    .d-none.d-md-inline {
+        display: none !important;
+    }
+}
+
+/* Theme toggle button */
+.top-navbar .theme-toggle {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Search Widget Styles */
+.search-widget {
+    position: relative;
+    margin-left: 1rem; /* Add space between left content and search */
+}
+
+    .search-widget input {
+        padding: 0.25rem 2rem 0.25rem 0.5rem;
+        height: 32px;
+        border: 1px solid var(--search-border);
+        background: var(--search-bg);
+        color: var(--search-color);
+        width: 200px; /* Fixed width, can be adjusted */
+    }
+
+    .search-widget button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 32px;
+        background: transparent;
+        border: none;
+        color: var(--search-icon-color);
+        cursor: pointer;
+    }
+
+        .search-widget button:hover {
+            color: var(--search-icon-hover);
+        }
+
+/* Theme variables */
+[data-bs-theme="light"] {
+    --search-bg: #ffffff;
+    --search-border: #ced4da;
+    --search-color: #212529;
+    --search-icon-color: #6c757d;
+    --search-icon-hover: #0d6efd;
+}
+
+[data-bs-theme="dark"] {
+    --search-bg: #212529;
+    --search-border: #495057;
+    --search-color: #f8f9fa;
+    --search-icon-color: #adb5bd;
+    --search-icon-hover: #85d6ff;
+}
+
+
+/* Theme-specific variables for TopBar */
+[data-bs-theme="light"] {
+    --top-navbar-bg: #ffffff;
+    --top-navbar-border: #dee2e6;
+}
+
+[data-bs-theme="dark"] {
+    --top-navbar-bg: #343a40;
+    --top-navbar-border: #495057;
+}
+
+.top-navbar {
+    background: var(--top-navbar-bg);
+    border-bottom: 1px solid var(--top-navbar-border);
+}
