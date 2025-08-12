@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/LeftMenu.css';
 
@@ -6,157 +6,152 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleAction = (item) => {
+    // State to track the open/closed status of each collapsible menu by its ID.
+    const [openMenus, setOpenMenus] = useState(() => {
+        const initial = {};
+        menuItems.forEach(item => {
+            if (item.subItems) {
+                // On initial load, check if any sub-item is active and expand its parent.
+                initial[item.id] = item.subItems.some(sub =>
+                    sub.path ? sub.path === location.pathname : false
+                );
+            }
+        });
+        return initial;
+    });
+
+    // ** ---- MODIFIED SECTION START ---- ** //
+    // This effect ensures the correct parent menu is open when the route changes,
+    // for example, when navigating directly to a sub-item's URL.
+    // It NO LONGER closes other menus.
+    useEffect(() => {
+        // Find the parent menu that contains the currently active sub-item path.
+        const parentMenuOfActiveItem = menuItems.find(item =>
+            item.subItems?.some(sub => sub.path === location.pathname)
+        );
+
+        // If we found a parent and it's currently closed, open it.
+        if (parentMenuOfActiveItem && !openMenus[parentMenuOfActiveItem.id]) {
+            setOpenMenus(prevOpenMenus => ({
+                ...prevOpenMenus,
+                [parentMenuOfActiveItem.id]: true
+            }));
+        }
+        // We don't add an `else` block to close other menus.
+        // Closing is now handled only by the user's click action.
+    }, [location.pathname, menuItems, openMenus]); // Added `openMenus` to dependency array
+    // ** ---- MODIFIED SECTION END ---- ** //
+
+
+    const handleAction = (item, e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         const utils = {
             navigate,
             closeMenu: () => {
                 const offcanvas = document.getElementById('mobileSidebarOffcanvas');
                 if (offcanvas && offcanvas.classList.contains('show')) {
-                    offcanvas.classList.remove('show');
+                    const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvas);
+                    if (bsOffcanvas) bsOffcanvas.hide();
                 }
             },
-            stopPropagation: (e) => e.stopPropagation()
+            stopPropagation: (event) => event && event.stopPropagation(),
         };
 
         if (item.action) {
             item.action(utils);
+        } else if (item.path) {
+            navigate(item.path);
+            utils.closeMenu();
         }
     };
 
-    // Check if item or any sub-item matches current route
-    const isActive = (item) => {
-        if (item.subItems) {
-            return item.subItems.some(subItem => {
-                if (subItem.path) return location.pathname === subItem.path;
-                if (subItem.action) {
-                    const pathFromAction = subItem.action.toString().match(/navigate\(['"]([^'"]+)['"]/);
-                    return pathFromAction && location.pathname === pathFromAction[1];
-                }
-                return false;
-            });
-        }
+    // Toggles the open/closed state of a specific menu.
+    const toggleMenu = (id, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpenMenus(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
 
-        if (item.path) return location.pathname === item.path;
-        if (item.action) {
-            const pathFromAction = item.action.toString().match(/navigate\(['"]([^'"]+)['"]/);
-            return pathFromAction && location.pathname === pathFromAction[1];
+    // Checks if an item or its sub-item is the currently active route.
+    const isActive = (item) => {
+        if (item.path && location.pathname === item.path) return true;
+        if (item.subItems) {
+            return item.subItems.some(subItem =>
+                subItem.path ? subItem.path === location.pathname : false
+            );
         }
         return false;
     };
 
-    const renderItemContent = (item) => (
-        <>
-            <i className={`fas fa-${item.icon} me-2`} />
-            <span>{item.label}</span>
-            {item.subItems && <i className="fas fa-chevron-down small" />}
-        </>
-    );
-
-    const SubMenuItem = ({ item, isMobile = false }) => {
+    // Reusable MenuItem component for both Desktop and Mobile views
+    const renderMenuItem = (item, isMobile = false) => {
         const active = isActive(item);
-        return (
-            <li className="nav-item">
-                <a
-                    href="#"
-                    className={`nav-link ${isMobile ? 'ps-4' : 'sub-link'} ${active ? 'active' : ''}`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleAction(item);
-                    }}
-                    data-bs-dismiss={isMobile ? "offcanvas" : undefined}
-                >
-                    {item.icon && <i className={`fas fa-${item.icon} me-2`} />}
-                    <span>{item.label}</span>
-                </a>
-            </li>
-        );
-    };
-
-    const MenuItem = ({ item }) => {
-        const active = isActive(item); // Only route-based active
+        const isOpen = openMenus[item.id];
 
         if (item.subItems) {
             return (
-                <li className="nav-item">
-                    <a
-                        href="#"
-                        className="nav-link d-flex align-items-center"
-                        data-bs-toggle="collapse"
-                        data-bs-target={`#desktop-collapse-${item.id}`}
-                        aria-expanded="false"
+                <li className="nav-item" key={item.id}>
+                    <button
+                        type="button"
+                        className={`nav-link d-flex align-items-center w-100 text-start ${active ? 'active' : ''}`}
+                        onClick={(e) => toggleMenu(item.id, e)}
+                        aria-expanded={isOpen}
                     >
-                        {renderItemContent(item)}
-                    </a>
+                        {item.icon && <i className={`fas fa-${item.icon} me-2`} />}
+                        <span className="flex-grow-1">{item.label}</span>
+                        <i
+                            className={`fas fa-chevron-down small ms-auto`}
+                            style={{
+                                transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
+                                transition: 'transform 0.3s ease',
+                            }}
+                        />
+                    </button>
+                    {/* The collapsible list of sub-items */}
                     <ul
-                        className="nav flex-column collapse ps-3"
-                        id={`desktop-collapse-${item.id}`}
-                        onClick={(e) => e.stopPropagation()}
+                        className="nav flex-column ps-3"
+                        style={{
+                            maxHeight: isOpen ? '500px' : '0',
+                            overflow: 'hidden',
+                            transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out',
+                            opacity: isOpen ? 1 : 0,
+                            visibility: isOpen ? 'visible' : 'hidden',
+                        }}
                     >
-                        {item.subItems.map((subItem, idx) => (
-                            <SubMenuItem key={idx} item={subItem} />
-                        ))}
+                        {item.subItems
+                            .filter(sub => sub.visible !== false)
+                            .map((subItem, idx) => (
+                                <li className="nav-item" key={idx}>
+                                    <a
+                                        href={subItem.path || '#'}
+                                        className={`nav-link sub-link d-flex align-items-center ${location.pathname === subItem.path ? 'active' : ''}`}
+                                        onClick={(e) => handleAction(subItem, e)}
+                                    >
+                                        {subItem.icon && <i className={`fas fa-${subItem.icon} me-2`} />}
+                                        <span>{subItem.label}</span>
+                                    </a>
+                                </li>
+                            ))}
                     </ul>
                 </li>
             );
         }
 
         return (
-            <li className="nav-item">
+            <li className="nav-item" key={item.id}>
                 <a
-                    href="#"
+                    href={item.path || '#'}
                     className={`nav-link ${active ? 'active' : ''}`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleAction(item);
-                    }}
+                    onClick={(e) => handleAction(item, e)}
                 >
-                    {renderItemContent(item)}
-                </a>
-            </li>
-        );
-    };
-
-    const MobileMenuItem = ({ item }) => {
-        const active = isActive(item);
-
-        if (item.subItems) {
-            return (
-                <li className="nav-item">
-                    <a
-                        href="#"
-                        className="nav-link d-flex align-items-center"
-                        data-bs-toggle="collapse"
-                        data-bs-target={`#mobile-collapse-${item.id}`}
-                        aria-expanded="false"
-                    >
-                        <i className={`fas fa-${item.icon} me-2`} />
-                        <span className="flex-grow-1">{item.label}</span>
-                        <i className="fas fa-chevron-down small" />
-                    </a>
-                    <div className="collapse" id={`mobile-collapse-${item.id}`}>
-                        <ul className="nav flex-column">
-                            {item.subItems.map((subItem, idx) => (
-                                <SubMenuItem key={idx} item={subItem} isMobile />
-                            ))}
-                        </ul>
-                    </div>
-                </li>
-            );
-        }
-
-        return (
-            <li className="nav-item">
-                <a
-                    href="#"
-                    className={`nav-link d-flex align-items-center ${active ? 'active' : ''}`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleAction(item);
-                    }}
-                    data-bs-dismiss="offcanvas"
-                >
-                    <i className={`fas fa-${item.icon} me-2`} />
+                    {item.icon && <i className={`fas fa-${item.icon} me-2`} />}
                     <span>{item.label}</span>
                 </a>
             </li>
@@ -172,23 +167,33 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
                     {title && <span className="sidebar-title-text">{title}</span>}
                 </h4>
                 <ul className="nav flex-column nav-pills">
-                    {menuItems.filter(item => item.visible !== false).map((item, idx) => (
-                        <MenuItem key={`d-${idx}`} item={item} />
-                    ))}
+                    {menuItems
+                        .filter(item => item.visible !== false)
+                        .map((item, idx) => renderMenuItem(item))}
                 </ul>
             </nav>
 
             {/* Mobile Offcanvas */}
-            <div className="offcanvas offcanvas-start d-md-none" tabIndex="-1" id="mobileSidebarOffcanvas">
+            <div
+                className="offcanvas offcanvas-start d-md-none"
+                tabIndex="-1"
+                id="mobileSidebarOffcanvas"
+                aria-labelledby="mobileSidebarLabel"
+            >
                 <div className="offcanvas-header">
-                    <h5 className="offcanvas-title">Menu</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <h5 className="offcanvas-title" id="mobileSidebarLabel">Menu</h5>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="offcanvas"
+                        aria-label="Close"
+                    ></button>
                 </div>
                 <div className="offcanvas-body p-3">
                     <ul className="nav flex-column nav-pills">
-                        {menuItems.filter(item => item.visible !== false).map((item, idx) => (
-                            <MobileMenuItem key={`m-${idx}`} item={item} />
-                        ))}
+                        {menuItems
+                            .filter(item => item.visible !== false)
+                            .map((item, idx) => renderMenuItem(item, true))}
                     </ul>
                 </div>
             </div>

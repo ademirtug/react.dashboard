@@ -6,6 +6,7 @@ import ThemeProvider from './components/context/ThemeContext';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import AppTranslations from './components/pages/AppTranslations';
 import WordTranslations from './components/pages/WordTranslations';
+import LessonCatalog from './components/pages/LessonCatalog';
 export default function App() {
     return (
 
@@ -17,6 +18,7 @@ export default function App() {
 
     );
 }
+
 
 function AppContent() {
     const navigate = useNavigate();
@@ -36,12 +38,12 @@ function AppContent() {
                 {
                     label: 'Locales',
                     icon: 'mobile',
-                    action: ({ navigate }) => navigate('/locales')
+                    action: ({ navigate }) => navigate('/apptranslations')
                 },
                 {
                     label: 'Dictionaries',
                     icon: 'spell-check',
-                    action: ({ navigate }) => navigate('/dictionaries')
+                    action: ({ navigate }) => navigate('/wordtranslations')
                 }
             ]
         },
@@ -90,9 +92,10 @@ function AppContent() {
         <>
             <Routes>
                     <Route element={<Dashboard menuItems={menuItems} topBarConfig={topBarConfig} />}>
-                        <Route index element={<AppTranslations />} />
-                        <Route path="apptranslations" element={<AppTranslations />} />
-                        <Route path="wordtranslations" element={<WordTranslations />} />
+                    <Route index element={<AppTranslations />} />
+                    <Route path="apptranslations" element={<AppTranslations />} />
+                    <Route path="wordtranslations" element={<WordTranslations />} />
+                    <Route path="lessoncatalog" element={<LessonCatalog />} />
                     </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
