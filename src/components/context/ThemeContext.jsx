@@ -15,9 +15,9 @@ export default function ThemeProvider({ children }) {
 
     const getThemeIcon = () => {
         switch (theme) {
-            case 'light': return 'sun';
-            case 'dark': return 'moon';
-            default: return 'desktop';
+            case 'light': return 'brightness_7';
+            case 'dark': return 'brightness_4';
+            default: return 'computer';
         }
     };
 

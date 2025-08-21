@@ -6,12 +6,11 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // State to track the open/closed status of each collapsible menu by its ID.
+    // State to track open/closed status of each collapsible menu
     const [openMenus, setOpenMenus] = useState(() => {
         const initial = {};
         menuItems.forEach(item => {
             if (item.subItems) {
-                // On initial load, check if any sub-item is active and expand its parent.
                 initial[item.id] = item.subItems.some(sub =>
                     sub.path ? sub.path === location.pathname : false
                 );
@@ -20,28 +19,19 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
         return initial;
     });
 
-    // ** ---- MODIFIED SECTION START ---- ** //
-    // This effect ensures the correct parent menu is open when the route changes,
-    // for example, when navigating directly to a sub-item's URL.
-    // It NO LONGER closes other menus.
+    // Sync openMenus when route changes (keep parent open if sub-item is active)
     useEffect(() => {
-        // Find the parent menu that contains the currently active sub-item path.
         const parentMenuOfActiveItem = menuItems.find(item =>
             item.subItems?.some(sub => sub.path === location.pathname)
         );
 
-        // If we found a parent and it's currently closed, open it.
         if (parentMenuOfActiveItem && !openMenus[parentMenuOfActiveItem.id]) {
-            setOpenMenus(prevOpenMenus => ({
-                ...prevOpenMenus,
+            setOpenMenus(prev => ({
+                ...prev,
                 [parentMenuOfActiveItem.id]: true
             }));
         }
-        // We don't add an `else` block to close other menus.
-        // Closing is now handled only by the user's click action.
-    }, [location.pathname, menuItems, openMenus]); // Added `openMenus` to dependency array
-    // ** ---- MODIFIED SECTION END ---- ** //
-
+    }, [location.pathname, menuItems, openMenus]);
 
     const handleAction = (item, e) => {
         if (e) {
@@ -69,7 +59,6 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
         }
     };
 
-    // Toggles the open/closed state of a specific menu.
     const toggleMenu = (id, e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -79,7 +68,6 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
         }));
     };
 
-    // Checks if an item or its sub-item is the currently active route.
     const isActive = (item) => {
         if (item.path && location.pathname === item.path) return true;
         if (item.subItems) {
@@ -90,7 +78,7 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
         return false;
     };
 
-    // Reusable MenuItem component for both Desktop and Mobile views
+    // Reusable MenuItem component
     const renderMenuItem = (item, isMobile = false) => {
         const active = isActive(item);
         const isOpen = openMenus[item.id];
@@ -104,17 +92,27 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
                         onClick={(e) => toggleMenu(item.id, e)}
                         aria-expanded={isOpen}
                     >
-                        {item.icon && <i className={`fas fa-${item.icon} me-2`} />}
+                        {/* Material Icon */}
+                        {item.icon && (
+                            <i className="material-symbols-rounded me-2">
+                                {item.icon}
+                            </i>
+                        )}
                         <span className="flex-grow-1">{item.label}</span>
+                        {/* Dropdown Chevron using Material Icons */}
                         <i
-                            className={`fas fa-chevron-down small ms-auto`}
+                            className="material-symbols-rounded"
                             style={{
+                                fontSize: '1rem',
                                 transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
                                 transition: 'transform 0.3s ease',
                             }}
-                        />
+                        >
+                            expand_more
+                        </i>
                     </button>
-                    {/* The collapsible list of sub-items */}
+
+                    {/* Sub-items */}
                     <ul
                         className="nav flex-column ps-3"
                         style={{
@@ -134,7 +132,11 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
                                         className={`nav-link sub-link d-flex align-items-center ${location.pathname === subItem.path ? 'active' : ''}`}
                                         onClick={(e) => handleAction(subItem, e)}
                                     >
-                                        {subItem.icon && <i className={`fas fa-${subItem.icon} me-2`} />}
+                                        {subItem.icon && (
+                                            <i className="material-symbols-rounded me-2">
+                                                {subItem.icon}
+                                            </i>
+                                        )}
                                         <span>{subItem.label}</span>
                                     </a>
                                 </li>
@@ -148,10 +150,14 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
             <li className="nav-item" key={item.id}>
                 <a
                     href={item.path || '#'}
-                    className={`nav-link ${active ? 'active' : ''}`}
+                    className={`nav-link d-flex align-items-center ${active ? 'active' : ''}`}
                     onClick={(e) => handleAction(item, e)}
                 >
-                    {item.icon && <i className={`fas fa-${item.icon} me-2`} />}
+                    {item.icon && (
+                        <i className="material-symbols-rounded me-2">
+                            {item.icon}
+                        </i>
+                    )}
                     <span>{item.label}</span>
                 </a>
             </li>
@@ -163,7 +169,11 @@ const LeftMenu = ({ icon, title, menuItems = [] }) => {
             {/* Desktop Sidebar */}
             <nav id="sidebar" className="p-3 d-none d-md-block">
                 <h4 className="mb-4">
-                    {icon && <i className={`${icon} me-2`} />}
+                    {icon && (
+                        <i className="material-symbols-rounded me-2" style={{ fontSize: '1.5rem' }}>
+                            {icon}
+                        </i>
+                    )}
                     {title && <span className="sidebar-title-text">{title}</span>}
                 </h4>
                 <ul className="nav flex-column nav-pills">

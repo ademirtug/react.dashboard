@@ -20,7 +20,7 @@ const TopBar = ({
                 data-bs-target="#mobileSidebarOffcanvas"
                 aria-controls="mobileSidebarOffcanvas"
             >
-                <i className="fas fa-bars"></i>
+                <i className="material-symbols-rounded">menu</i>
             </button>
 
             {/* Left Content Area */}
@@ -40,12 +40,13 @@ const TopBar = ({
                 {/* Theme Toggle Button */}
                 {showThemeToggle && (
                     <button
-                        className="btn btn-outline-secondary btn-sm rounded-circle me-2"
+                        className="btn btn-outline-secondary btn-sm rounded-circle me-2 d-flex  align-items-center justify-content-center"
                         type="button"
                         onClick={cycleTheme}
                         aria-label="Toggle theme"
+                        style={{ width: "2rem", height: "2rem" }}
                     >
-                        <i className={`fas fa-${getThemeIcon()}`}></i>
+                        <i className="material-symbols-rounded">{getThemeIcon()}</i>
                     </button>
                 )}
 
