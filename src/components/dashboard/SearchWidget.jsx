@@ -18,7 +18,7 @@ const SearchWidget = ({ placeholder = "Search...", onSearch }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button type="submit" aria-label="Search">
-                <i className="fas fa-search" />
+                <i className="material-symbols-rounded">search</i>
             </button>
         </form>
     );
