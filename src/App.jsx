@@ -42,7 +42,7 @@ function AppContent() {
                 },
                 {
                     label: 'Dictionaries',
-                    icon: 'spell-check',
+                    icon: 'dictionary',
                     action: ({ navigate }) => navigate('/wordtranslations')
                 }
             ]
@@ -54,7 +54,7 @@ function AppContent() {
             subItems: [
                 {
                     label: 'Lesson Catalog',
-                    icon: 'person-chalkboard',
+                    icon: 'co_present',
                     action: ({ navigate }) => navigate('/lessoncatalog')
                 },
             ]
@@ -72,11 +72,9 @@ function AppContent() {
         rightContent: (
             <UserDropdown
                 items={[
-                    { label: 'Profile', icon: 'user' },
-                    { label: 'Notifications', icon: 'bell' },
                     {
                         label: 'Logout',
-                        icon: 'sign-out-alt',
+                        icon: 'logout',
                         onClick: () => {
                             logout();
                             navigate('/login');
