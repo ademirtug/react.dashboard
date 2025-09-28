@@ -33,12 +33,18 @@
         padding-left: calc(1rem - 3px);
         display: flex;
         align-items: center;
-        white-space: nowrap;
-        overflow: hidden;
+        /* Removed overflow properties */
     }
+        /* Add text truncation ONLY to label span */
+        #sidebar .nav-link > span.flex-grow-1,
+        #mobileSidebarOffcanvas .nav-link > span.flex-grow-1 {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-        #sidebar .nav-link i,
-        #mobileSidebarOffcanvas .nav-link i {
+        #sidebar .nav-link > i,
+        #mobileSidebarOffcanvas .nav-link > i {
             width: 20px;
             text-align: center;
             margin-right: 0.5rem;
@@ -88,19 +94,6 @@
         border-left: 3px solid var(--sidebar-link-active-color);
     }
 
-/* Chevron icon rotation (used in both desktop and mobile) */
-#sidebar .nav-link .fa-chevron-down,
-#mobileSidebarOffcanvas .nav-link .fa-chevron-down {
-    transition: transform 0.3s ease;
-    margin-left: auto;
-    margin-right: 0;
-}
-/* Rotated chevron */
-#sidebar .nav-link.rotated .fa-chevron-down,
-#mobileSidebarOffcanvas .nav-link.rotated .fa-chevron-down {
-    transform: rotate(180deg);
-}
-
 /* Mobile Offcanvas Specific */
 #mobileSidebarOffcanvas .nav-link {
     padding: 0.5rem 1rem;
@@ -116,6 +109,16 @@
         display: none;
     }
 }
+
+.chevron {
+    transition: transform 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .chevron.open {
+        transform: rotate(-90deg);
+    }
 
 /* Theme Variables */
 [data-bs-theme="light"] {

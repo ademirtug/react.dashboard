@@ -1,3 +1,4 @@
+/*react.dashboard/styles/Dashboard.css*/
 .dashboard-wrapper {
     display: flex;
     min-height: 100vh;
@@ -9,10 +10,8 @@
 
 #content-wrapper {
     flex: 1;
-    margin-left: 250px;
     padding-top: var(--top-navbar-height);
     background: var(--bs-body-bg);
-    width: calc(100% - 250px);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -54,4 +53,69 @@ footer {
 
 :root {
     --top-navbar-height: 56px;
+}
+
+.sidebar-resizer {
+    width: 5px;
+    cursor: col-resize;
+    background-color: transparent;
+    z-index: 1030;
+    position: relative;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-resizer {
+    width: 5px; /* thin vertical handle */
+    cursor: col-resize; /* mouse changes to resize icon */
+    background-color: rgba(0,0,0,0.05); /* optional faint color so it’s easier to grab */
+    position: absolute; /* makes it float over the layout */
+    top: 0; /* span full height */
+    bottom: 0;
+    z-index: 1030; /* above sidebar and content */
+}
+
+.topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--top-navbar-height);
+    padding: 0 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.logo-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar-resizer,
+    .LeftMenu {
+        display: none;
+    }
+
+    #content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
 }
